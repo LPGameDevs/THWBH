@@ -1,0 +1,151 @@
+name: "godot-ci export"
+on: push
+
+env:
+  GODOT_VERSION: 4.3
+  EXPORT_NAME: thwbh
+  ITCH_USERNAME: yanniboi
+  ITCH_GAME_ID: thwbh
+
+jobs:
+#  export-windows:
+#    name: Windows Export
+#    runs-on: ubuntu-20.04
+#    container:
+#      image: barichello/godot-ci:4.2
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          lfs: true
+#      - name: Setup
+#        run: |
+#          mkdir -v -p ~/.local/share/godot/templates
+#          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+#      - name: Windows Build
+#        run: |
+#          mkdir -v -p build/windows
+#          cd $PROJECT_PATH
+#          godot --headless --verbose --export-release "Windows Desktop" ../build/windows/$EXPORT_NAME.exe
+#      - name: Upload Artifact
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: windows
+#          path: build/windows
+
+#  export-linux:
+#    name: Linux Export
+#    runs-on: ubuntu-20.04
+#    container:
+#      image: barichello/godot-ci:4.2
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          lfs: true
+#      - name: Setup
+#        run: |
+#          mkdir -v -p ~/.local/share/godot/templates
+#          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+#      - name: Linux Build
+#        run: |
+#          mkdir -v -p build/linux
+#          cd $PROJECT_PATH
+#          godot --headless --verbose --export-release "Linux/X11" ../build/linux/$EXPORT_NAME.x86_64
+#      - name: Upload Artifact
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: linux
+#          path: build/linux
+
+  export-web:
+    name: Web Export
+    runs-on: ubuntu-20.04
+    container:
+      image: barichello/godot-ci:4.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          lfs: false
+      - run: ./ci-scripts/generate-build-variables.sh
+        env:
+          ENCRYPTION_PASSWORD: ${{ secrets.ENCRYPTION_PASSWORD }}
+          NAKAMA_HOST: ${{ secrets.NAKAMA_HOST }}
+          NAKAMA_PORT: ${{ secrets.NAKAMA_PORT }}
+          NAKAMA_SERVER_KEY: ${{ secrets.NAKAMA_SERVER_KEY }}
+          FALLBACK_ICE_SERVERS: ${{ secrets.FALLBACK_ICE_SERVERS }}
+          ICE_SERVERS: ${{ secrets.ICE_SERVERS }}
+      - run: cat Scripts/Singletons/Build.gd
+      - name: Setup
+        run: |
+          mkdir -v -p ~/.local/share/godot/templates
+          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+          ln -s ~/.local/share/godot/templates ~/.local/share/godot/export_templates
+      - name: Web Build
+        run: |
+          mkdir -v -p build/web
+          godot --headless --verbose --export-release "HTML5" build/web/index.html
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-web
+          path: build/web
+          retention-days: 1
+#      - name: Install rsync 📚
+#        run: |
+#          apt-get update && apt-get install -y rsync
+#      - name: Deploy to GitHub Pages 🚀
+#        uses: JamesIves/github-pages-deploy-action@releases/v4
+#        with:
+#          branch: gh-pages # The branch the action should deploy to.
+#          folder: build/web # The folder the action should deploy.
+
+#  export-mac:
+#    name: Mac Export
+#    runs-on: ubuntu-20.04
+#    container:
+#      image: barichello/godot-ci:4.2
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          lfs: true
+#      - name: Setup
+#        run: |
+#          mkdir -v -p ~/.local/share/godot/templates
+#          mv /root/.local/share/godot/templates/${GODOT_VERSION}.stable ~/.local/share/godot/templates/${GODOT_VERSION}.stable
+#      - name: Mac Build
+#        run: |
+#          mkdir -v -p build/mac
+#          cd $PROJECT_PATH
+#          godot --headless --verbose --export-release "Mac OSX" ../build/mac/$EXPORT_NAME.zip
+#      - name: Upload Artifact
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: mac
+#          path: build/mac
+
+
+  deployItch:
+    needs: [export-web]
+    name: Deploy to Itch.io 🚀
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        channel:
+          - web
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: build-${{ matrix.channel }}
+          path: build/${{ matrix.channel }}
+      - uses: KikimoraGames/itch-publish@v0.0.3
+        with:
+          butlerApiKey: ${{secrets.BUTLER_API_KEY}}
+          gameData: ./build/${{ matrix.channel }}
+          itchUsername: ${{env.ITCH_USERNAME}}
+          itchGameId: ${{ env.ITCH_GAME_ID }}
+          buildChannel: ${{ matrix.channel }}
+#          buildNumber: ${{ needs.version.outputs.version_hash }}
