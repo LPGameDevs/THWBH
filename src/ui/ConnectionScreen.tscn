@@ -1,0 +1,195 @@
+[gd_scene format=3 uid="uid://bv7conkjpisg3"]
+
+[node name="ConnectionScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="TabContainer" type="TabContainer" parent="."]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+current_tab = 0
+
+[node name="Steam" type="Control" parent="TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="Label" type="Label" parent="TabContainer/Steam"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_right = 0.5
+text = "SESSION_SETUP_TAB_STEAM_MESSAGE"
+
+[node name="GridContainer" type="GridContainer" parent="TabContainer/Steam"]
+layout_mode = 0
+anchor_top = 0.5
+anchor_right = 1.0
+anchor_bottom = 0.5
+columns = 2
+
+[node name="UsernameLabel" type="Label" parent="TabContainer/Steam/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 9
+text = "USERNAME_FIELD_LABEL:"
+horizontal_alignment = 2
+
+[node name="Username" type="LineEdit" parent="TabContainer/Steam/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+caret_blink = true
+
+[node name="SteamLoginButton" type="Button" parent="TabContainer/Steam"]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+text = "BUTTON_CREATE_ACCOUNT"
+
+[node name="Login" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="GridContainer" type="GridContainer" parent="TabContainer/Login"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="EmailLabel" type="Label" parent="TabContainer/Login/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 9
+text = "EMAIL_FIELD_LABEL"
+
+[node name="Email" type="LineEdit" parent="TabContainer/Login/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+caret_blink = true
+
+[node name="PasswordLabel" type="Label" parent="TabContainer/Login/GridContainer"]
+layout_mode = 2
+text = "PASSWORD_FIELD_LABEL"
+
+[node name="Password" type="LineEdit" parent="TabContainer/Login/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+caret_blink = true
+secret = true
+
+[node name="Empty" type="Control" parent="TabContainer/Login/GridContainer"]
+layout_mode = 2
+
+[node name="SaveCheckBox" type="CheckBox" parent="TabContainer/Login/GridContainer"]
+layout_mode = 2
+text = "CHECKBOX_SAVE_CREDS"
+
+[node name="LoginButton" type="Button" parent="TabContainer/Login"]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+text = "BUTTON_LOGIN"
+
+[node name="Create Account" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="GridContainer" type="GridContainer" parent="TabContainer/Create Account"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="UsernameLabel" type="Label" parent="TabContainer/Create Account/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 9
+text = "USERNAME_FIELD_LABEL"
+
+[node name="Username" type="LineEdit" parent="TabContainer/Create Account/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+caret_blink = true
+
+[node name="EmailLabel" type="Label" parent="TabContainer/Create Account/GridContainer"]
+layout_mode = 2
+text = "EMAIL_FIELD_LABEL"
+
+[node name="Email" type="LineEdit" parent="TabContainer/Create Account/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+caret_blink = true
+
+[node name="PasswordLabel" type="Label" parent="TabContainer/Create Account/GridContainer"]
+layout_mode = 2
+text = "PASSWORD_FIELD_LABEL"
+
+[node name="Password" type="LineEdit" parent="TabContainer/Create Account/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+caret_blink = true
+secret = true
+
+[node name="Empty" type="Control" parent="TabContainer/Create Account/GridContainer"]
+layout_mode = 2
+
+[node name="SaveCheckBox" type="CheckBox" parent="TabContainer/Create Account/GridContainer"]
+layout_mode = 2
+text = "CHECKBOX_SAVE_CREDS"
+
+[node name="CreateAccountButton" type="Button" parent="TabContainer/Create Account"]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "BUTTON_CREATE_ACCOUNT"
+
+[node name="Forgot password?" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 3
+
+[node name="GridContainer" type="GridContainer" parent="TabContainer/Forgot password?"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+columns = 2
+
+[node name="EmailLabel" type="Label" parent="TabContainer/Forgot password?/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 9
+text = "EMAIL_FIELD_LABEL"
+
+[node name="Email" type="LineEdit" parent="TabContainer/Forgot password?/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ResetPasswordButton" type="Button" parent="TabContainer/Forgot password?"]
+layout_mode = 0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+text = "BUTTON_RESET_PASSWORD"
+
+[connection signal="pressed" from="TabContainer/Steam/SteamLoginButton" to="." method="_on_SteamLoginButton_pressed"]
+[connection signal="pressed" from="TabContainer/Login/LoginButton" to="." method="_on_LoginButton_pressed"]
+[connection signal="pressed" from="TabContainer/Create Account/CreateAccountButton" to="." method="_on_CreateAccountButton_pressed"]
+[connection signal="pressed" from="TabContainer/Forgot password?/ResetPasswordButton" to="." method="_on_ResetPasswordButton_pressed"]

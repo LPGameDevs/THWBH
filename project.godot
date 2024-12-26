@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="THWBH"
-run/main_scene="res://start.tscn"
+run/main_scene="res://Start.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
+
+[autoload]
+
+SignalManager="*res://src/autoload/SignalManager.gd"
 
 [display]
 
