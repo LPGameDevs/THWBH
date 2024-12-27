@@ -100,7 +100,7 @@ func hide_all() -> void:
 	hide_back_button()
 
 func go_back() -> void:
-	emit_signal("back_button")
+	SignalManager.back_button.emit();
 
 func _on_BackButton_pressed() -> void:
 	go_back()

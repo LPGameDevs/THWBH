@@ -40,15 +40,15 @@ func _ready() -> void:
 	tab_container.set_tab_title(2, "SESSION_SETUP_TAB_CREATE_ACCOUNT")
 	tab_container.set_tab_title(3, "SESSION_SETUP_TAB_FORGOT_PASSWORD")
 
-	#if SteamManager.use_steam:
+	if SteamManager.use_steam:
 		#Steam.connect("get_auth_session_ticket_response", self, "_on_steam_auth_session_ticket_response")
-#
-		#create_account_tab.queue_free()
-		#tab_container.set_tab_title(0, "SESSION_SETUP_TAB_CREATE_ACCOUNT")
+
+		create_account_tab.queue_free()
+		tab_container.set_tab_title(0, "SESSION_SETUP_TAB_CREATE_ACCOUNT")
 		#steam_username_field.text = Steam.getPersonaName()
-	#else:
-		#tab_container.current_tab = 1
-		#steam_tab.queue_free()
+	else:
+		tab_container.current_tab = 1
+		steam_tab.queue_free()
 
 	#if Globals.arguments.has('email') and Globals.arguments.has('password'):
 		## Take email and password via command-line for debugging.
