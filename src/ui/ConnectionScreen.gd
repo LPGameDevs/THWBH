@@ -50,25 +50,18 @@ func _ready() -> void:
 		tab_container.current_tab = 1
 		steam_tab.queue_free()
 
-	#if Globals.arguments.has('email') and Globals.arguments.has('password'):
-		## Take email and password via command-line for debugging.
-		#_set_credentials(Globals.arguments['email'], Globals.arguments['password'])
-		#login_save_checkbox.pressed = false
-		#login_save_checkbox.visible = false
-		#create_account_save_checkbox.pressed = false
-		#create_account_save_checkbox.visible = false
-	#else:
-		#var file = File.new()
-		#if file.file_exists(CREDENTIALS_FILENAME):
-			#if file.open_encrypted_with_pass(CREDENTIALS_FILENAME, File.READ, Build.encryption_password) == OK:
-				#_load_credentials(file)
-		#elif file.file_exists(CREDENTIALS_FILENAME_OLD):
-			#if file.open(CREDENTIALS_FILENAME_OLD, File.READ) == OK:
-				#_load_credentials(file)
-				## Remove this file and replace with the new one.
-				#var dir = Directory.new()
-				#dir.remove(CREDENTIALS_FILENAME_OLD)
-				#_save_credentials()
+	if Globals.arguments.has('email') and Globals.arguments.has('password'):
+		# Take email and password via command-line for debugging.
+		_set_credentials(Globals.arguments['email'], Globals.arguments['password'])
+		login_save_checkbox.pressed = false
+		login_save_checkbox.visible = false
+		create_account_save_checkbox.pressed = false
+		create_account_save_checkbox.visible = false
+	else:
+		if FileAccess.file_exists(CREDENTIALS_FILENAME):
+			var file = FileAccess.open_encrypted_with_pass(CREDENTIALS_FILENAME, FileAccess.READ, Build.encryption_password);
+			if file.get_open_error() == OK:
+				_load_credentials(file)
 
 func _set_credentials(_email: String, _password: String) -> void:
 	email = _email
@@ -87,8 +80,7 @@ func _load_credentials(file: FileAccess) -> void:
 	file.close()
 
 func _save_credentials() -> void:
-	#var file = FileAccess.open_encrypted_with_pass(CREDENTIALS_FILENAME, FileAccess.WRITE, Build.encryption_password)
-	var file = FileAccess.open(CREDENTIALS_FILENAME, FileAccess.WRITE);
+	var file = FileAccess.open_encrypted_with_pass(CREDENTIALS_FILENAME, FileAccess.WRITE, Build.encryption_password)
 
 	var credentials = {
 		email = email,
@@ -106,9 +98,9 @@ func _show_screen(info: Dictionary = {}) -> void:
 	tab_container.current_tab = 0
 
 	# If we're in the Steam version, try to login via Steam first.
-	#if SteamManager.use_steam:
-		#do_steam_login()
-		#return
+	if SteamManager.use_steam:
+		do_steam_login()
+		return
 
 	# If we have a stored email and password, attempt to login straight away.
 	if email != '' and password != '':

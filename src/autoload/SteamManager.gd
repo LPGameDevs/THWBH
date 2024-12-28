@@ -35,5 +35,6 @@ func _initialize_steam() -> bool:
 	return true
 
 func _process(_delta: float) -> void:
+	pass;
 #	if use_steam:
 #		Steam.run_callbacks()

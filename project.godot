@@ -19,6 +19,9 @@ config/icon="res://icon.svg"
 
 SignalManager="*res://src/autoload/SignalManager.gd"
 SteamManager="*res://src/autoload/SteamManager.gd"
+Globals="*res://src/autoload/Globals.gd"
+Build="*res://src/autoload/Build.gd"
+Online="*res://src/autoload/Online.gd"
 
 [display]
 
