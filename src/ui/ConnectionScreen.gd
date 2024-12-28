@@ -117,34 +117,34 @@ func do_login(save_credentials: bool = false) -> void:
 	else:
 		ui_layer.show_message("MESSAGE_SESSION_LOGGING_IN")
 
-	#var nakama_session = yield(Online.nakama_client.authenticate_email_async(email, password, null, false), "completed")
+	var nakama_session = await Online.nakama_client.authenticate_email_async(email, password, null, false);
 
-	#if nakama_session.is_exception():
-		#visible = true
-		#login_email_field.grab_focus()
-		#ui_layer.show_message("MESSAGE_LOGIN_FAILED")
-#
-		## Clear stored email and password, but leave the fields alone so the
-		## user can attempt to correct them.
-		#email = ''
-		#password = ''
-#
-		## We always set Online.nakama_session in case something is yielding
-		## on the "session_changed" signal.
-		#Online.nakama_session = null
-	#else:
-		#if save_credentials:
-			#_save_credentials()
-#
-		#Online.nakama_session = nakama_session
-		#if SteamManager.use_steam:
-			## This will lead to linking the Steam account.
-			#_get_steam_auth_session_ticket()
-#
-		#ui_layer.hide_message()
-#
-		#if _next_screen:
-			#ui_layer.show_screen(_next_screen)
+	if nakama_session.is_exception():
+		visible = true
+		login_email_field.grab_focus()
+		ui_layer.show_message("MESSAGE_LOGIN_FAILED")
+
+		# Clear stored email and password, but leave the fields alone so the
+		# user can attempt to correct them.
+		email = ''
+		password = ''
+
+		# We always set Online.nakama_session in case something is yielding
+		# on the "session_changed" signal.
+		Online.nakama_session = null
+	else:
+		if save_credentials:
+			_save_credentials()
+
+		Online.nakama_session = nakama_session
+		if SteamManager.use_steam:
+			# This will lead to linking the Steam account.
+			_get_steam_auth_session_ticket()
+
+		ui_layer.hide_message()
+
+		if _next_screen:
+			ui_layer.show_screen(_next_screen)
 
 func do_steam_login(create: bool = false) -> void:
 	_login_type = LoginType.STEAM
@@ -185,32 +185,30 @@ func _on_steam_auth_session_ticket_response(_auth_ticket_id, _result) -> void:
 		_finish_link_steam()
 
 func _finish_authenticate_steam() -> void:
-	pass;
-	#var nakama_session = yield(Online.nakama_client.authenticate_steam_async(_steam_auth_session_ticket, steam_username_field.text.strip_edges(), _steam_create), "completed")
-	#if nakama_session.is_exception():
-		#print (nakama_session.get_exception().message)
-		#var exception: NakamaException = nakama_session.get_exception()
-		#if exception.grpc_status_code == 5:
-			#ui_layer.show_message("MESSAGE_NO_USER_ACCOUNT")
-		#elif exception.grpc_status_code == 6:
-			#ui_layer.show_message("MESSAGE_USERNAME_TAKEN")
-		#else:
-			#ui_layer.show_message("MESSAGE_LOGIN_FAILED_STEAM")
-		#visible = true
-		#steam_login_button.focus.grab_without_sound()
-	#else:
-		#Online.nakama_session = nakama_session
-		#ui_layer.hide_message()
-#
-		#if _next_screen:
-			#ui_layer.show_screen(_next_screen)
+	var nakama_session = await Online.nakama_client.authenticate_steam_async(_steam_auth_session_ticket, steam_username_field.text.strip_edges(), _steam_create)
+	if nakama_session.is_exception():
+		print (nakama_session.get_exception().message)
+		var exception: NakamaException = nakama_session.get_exception()
+		if exception.grpc_status_code == 5:
+			ui_layer.show_message("MESSAGE_NO_USER_ACCOUNT")
+		elif exception.grpc_status_code == 6:
+			ui_layer.show_message("MESSAGE_USERNAME_TAKEN")
+		else:
+			ui_layer.show_message("MESSAGE_LOGIN_FAILED_STEAM")
+		visible = true
+		steam_login_button.focus.grab_without_sound()
+	else:
+		Online.nakama_session = nakama_session
+		ui_layer.hide_message()
+
+		if _next_screen:
+			ui_layer.show_screen(_next_screen)
 
 func _finish_link_steam() -> void:
-	pass;
 	# We don't check if this succeeded or not. Even if it fails, we're still
 	# logged in, so we keep going, and we'll try again the next time the user
 	# logs in.
-	#Online.nakama_client.link_steam_async(Online.nakama_session, _steam_auth_session_ticket)
+	Online.nakama_client.link_steam_async(Online.nakama_session, _steam_auth_session_ticket)
 
 func _on_SteamLoginButton_pressed() -> void:
 	do_steam_login(true)
@@ -240,30 +238,30 @@ func _on_CreateAccountButton_pressed() -> void:
 	visible = false
 	ui_layer.show_message("MESSAGE_CREATING_ACCOUNT")
 
-	#var nakama_session = yield(Online.nakama_client.authenticate_email_async(email, password, username, true), "completed")
+	var nakama_session = await Online.nakama_client.authenticate_email_async(email, password, username, true);
 
-	#if nakama_session.is_exception():
-		#visible = true
-		#create_account_username_field.grab_focus()
-#
-		#var msg = nakama_session.get_exception().message
-		## Nakama treats registration as logging in, so this is what we get if the
-		## the email is already is use but the password is wrong.
-		#if msg == 'Invalid credentials.':
-			#msg = 'MESSAGE_EMAIL_TAKEN'
-		#elif msg == '':
-			#msg = 'MESSAGE_CREATE_ACCOUNT_FAILED'
-		#ui_layer.show_message(msg)
-#
-		## We always set Online.nakama_session in case something is yielding
-		## on the "session_changed" signal.
-		#Online.nakama_session = null
-	#else:
-		#if save_credentials:
-			#_save_credentials()
-		#Online.nakama_session = nakama_session
-		#ui_layer.hide_message()
-		#ui_layer.show_screen("MatchScreen")
+	if nakama_session.is_exception():
+		visible = true
+		create_account_username_field.grab_focus()
+
+		var msg = nakama_session.get_exception().message
+		# Nakama treats registration as logging in, so this is what we get if the
+		# the email is already is use but the password is wrong.
+		if msg == 'Invalid credentials.':
+			msg = 'MESSAGE_EMAIL_TAKEN'
+		elif msg == '':
+			msg = 'MESSAGE_CREATE_ACCOUNT_FAILED'
+		ui_layer.show_message(msg)
+
+		# We always set Online.nakama_session in case something is yielding
+		# on the "session_changed" signal.
+		Online.nakama_session = null
+	else:
+		if save_credentials:
+			_save_credentials()
+		Online.nakama_session = nakama_session
+		ui_layer.hide_message()
+		ui_layer.show_screen("MatchScreen")
 
 func _on_ResetPasswordButton_pressed() -> void:
 	var email = $"TabContainer/Forgot password?/GridContainer/Email".text.strip_edges()
@@ -273,7 +271,8 @@ func _on_ResetPasswordButton_pressed() -> void:
 		return
 
 	var http_request := HTTPRequest.new()
-	add_child(http_request)
+	add_child(http_request);
+	http_request.request_completed.connect(self._password_reset_completed)
 
 	ui_layer.show_message("MESSAGE_PASSWORD_RESET_SENDING")
 
@@ -287,18 +286,14 @@ func _on_ResetPasswordButton_pressed() -> void:
 	var query_string: String = http_client.query_string_from_dict(data)
 
 	var headers := ["Content-Type: application/x-www-form-urlencoded"]
-	#if http_request.request(FORGOT_PASSWORD_URL, headers, true, HTTPClient.METHOD_POST, query_string) != OK:
-		#http_request.queue_free()
-		#ui_layer.show_message("MESSAGE_PASSWORD_RESET_FAILED")
-		#return
+	if http_request.request(FORGOT_PASSWORD_URL, headers, HTTPClient.METHOD_POST, query_string) != OK:
+		http_request.queue_free()
+		ui_layer.show_message("MESSAGE_PASSWORD_RESET_FAILED")
+		return
 
-	#var response = yield(http_request, "request_completed")
-	#var result = response[0]
-	#var response_code = response[1]
-
-	#if result != HTTPRequest.RESULT_SUCCESS or response_code >= 400:
-		#http_request.queue_free()
-		#ui_layer.show_message("MESSAGE_PASSWORD_RESET_FAILED")
-		#return
+func _password_reset_completed(result, response_code, headers, body):
+	if result != HTTPRequest.RESULT_SUCCESS or response_code >= 400:
+		ui_layer.show_message("MESSAGE_PASSWORD_RESET_FAILED")
+		return
 
 	ui_layer.show_message("MESSAGE_PASSWORD_RESET_SENT")
