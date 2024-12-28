@@ -53,9 +53,9 @@ func _ready() -> void:
 	if Globals.arguments.has('email') and Globals.arguments.has('password'):
 		# Take email and password via command-line for debugging.
 		_set_credentials(Globals.arguments['email'], Globals.arguments['password'])
-		login_save_checkbox.pressed = false
+		login_save_checkbox.button_pressed = false
 		login_save_checkbox.visible = false
-		create_account_save_checkbox.pressed = false
+		create_account_save_checkbox.button_pressed = false
 		create_account_save_checkbox.visible = false
 	else:
 		if FileAccess.file_exists(CREDENTIALS_FILENAME):
@@ -216,14 +216,14 @@ func _on_SteamLoginButton_pressed() -> void:
 func _on_LoginButton_pressed() -> void:
 	email = login_email_field.text.strip_edges()
 	password = login_password_field.text.strip_edges()
-	do_login(login_save_checkbox.pressed)
+	do_login(login_save_checkbox.button_pressed)
 
 func _on_CreateAccountButton_pressed() -> void:
 	email = $"TabContainer/Create Account/GridContainer/Email".text.strip_edges()
 	password = $"TabContainer/Create Account/GridContainer/Password".text.strip_edges()
 
 	var username = $"TabContainer/Create Account/GridContainer/Username".text.strip_edges()
-	var save_credentials = create_account_save_checkbox.pressed
+	var save_credentials = create_account_save_checkbox.button_pressed
 
 	if email == '':
 		ui_layer.show_message("MESSAGE_EMAIL_REQUIRED")

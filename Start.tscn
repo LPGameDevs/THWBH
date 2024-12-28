@@ -15,8 +15,6 @@ grow_vertical = 2
 
 [node name="ConnectionScreen" parent="UILayer/Screens" index="0" instance=ExtResource("3_6w60n")]
 layout_mode = 1
-grow_horizontal = 2
-grow_vertical = 2
 
 [node name="Overlay" parent="UILayer" index="1"]
 grow_horizontal = 2
