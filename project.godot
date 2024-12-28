@@ -22,6 +22,7 @@ SteamManager="*res://src/autoload/SteamManager.gd"
 Globals="*res://src/autoload/Globals.gd"
 Build="*res://src/autoload/Build.gd"
 Online="*res://src/autoload/Online.gd"
+Nakama="*res://addons/com.heroiclabs.nakama/Nakama.gd"
 
 [display]
 
