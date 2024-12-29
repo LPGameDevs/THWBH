@@ -9,8 +9,10 @@ var nakama_port: int = 7350
 var nakama_scheme: String = 'http'
 
 # For other scripts to access:
-var nakama_client: NakamaClient: set=_set_readonly_variable, get=get_nakama_client
-var nakama_session: NakamaSession: set=set_nakama_session
+var _nakama_client: NakamaClient = null;
+var nakama_client: NakamaClient: set=_set_readonly_variable, get=_get_nakama_client
+
+var nakama_session: NakamaSession: set=_set_nakama_session
 var nakama_socket: NakamaSocket: set=_set_readonly_variable
 
 # Internal variable for initializing the socket.
@@ -23,9 +25,9 @@ signal socket_connected (nakama_socket)
 func _set_readonly_variable(_value) -> void:
 	pass
 
-func get_nakama_client() -> NakamaClient:
-	if nakama_client == null:
-		nakama_client = Nakama.create_client(
+func _get_nakama_client() -> NakamaClient:
+	if _nakama_client == null:
+		_nakama_client = Nakama.create_client(
 			nakama_server_key,
 			nakama_host,
 			nakama_port,
@@ -33,9 +35,9 @@ func get_nakama_client() -> NakamaClient:
 			Nakama.DEFAULT_TIMEOUT,
 			NakamaLogger.LOG_LEVEL.ERROR)
 	
-	return nakama_client
+	return _nakama_client
 
-func set_nakama_session(_nakama_session: NakamaSession) -> void:
+func _set_nakama_session(_nakama_session: NakamaSession) -> void:
 	# Close out the old socket.
 	if nakama_socket:
 		nakama_socket.close()
@@ -55,7 +57,7 @@ func connect_nakama_socket() -> void:
 		return
 	_nakama_socket_connecting = true
 	
-	var new_socket = Nakama.create_socket_from(nakama_client)
+	var new_socket = Nakama.create_socket_from(_nakama_client)
 	await new_socket.connect_async(nakama_session);
 	nakama_socket = new_socket
 	_nakama_socket_connecting = false

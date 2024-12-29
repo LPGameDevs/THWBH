@@ -1,6 +1,6 @@
 extends "res://src/ui/Screen.gd"
 
-var Steam = Engine.get_singleton("Steam")
+#var Steam = Engine.get_singleton("Steam")
 
 @onready var tab_container := $TabContainer
 @onready var login_email_field := $TabContainer/Login/GridContainer/Email
@@ -88,12 +88,12 @@ func _save_credentials() -> void:
 	}
 	
 	var json = JSON.new();
-	file.store_line(json.print(credentials))
+	file.store_line(json.stringify(credentials))
 	file.close()
 
 func _show_screen(info: Dictionary = {}) -> void:
 	_reconnect = info.get('reconnect', false)
-	_next_screen = info.get('next_screen', 'MatchScreen')
+	_next_screen = info.get('next_screen', 'DebugScreen')
 
 	tab_container.current_tab = 0
 
@@ -160,29 +160,31 @@ func do_steam_login(create: bool = false) -> void:
 	_get_steam_auth_session_ticket()
 
 func _get_steam_auth_session_ticket() -> void:
-	var result = Steam.getAuthSessionTicket()
-
-	# Convert binary ticket to hexidecimal.
-	# See: https://partner.steamgames.com/doc/webapi/ISteamUserAuth#AuthenticateUserTicket
-	# Nakama uses that method to authenticate on its end.
-	_steam_auth_session_ticket = ''
-	for i in range(result['size']):
-		_steam_auth_session_ticket += "%02x" % result['buffer'][i]
+	pass;
+	#var result = Steam.getAuthSessionTicket()
+#
+	## Convert binary ticket to hexidecimal.
+	## See: https://partner.steamgames.com/doc/webapi/ISteamUserAuth#AuthenticateUserTicket
+	## Nakama uses that method to authenticate on its end.
+	#_steam_auth_session_ticket = ''
+	#for i in range(result['size']):
+		#_steam_auth_session_ticket += "%02x" % result['buffer'][i]
 
 func _on_steam_auth_session_ticket_response(_auth_ticket_id, _result) -> void:
-	if _login_type == LoginType.STEAM:
-		if _result != Steam.RESULT_OK:
-			ui_layer.show_message("MESSAGE_LOGIN_FAILED_STEAM")
-			visible = true
-			steam_login_button.focus.grab_without_sound()
-			return
-
-		_finish_authenticate_steam()
-	elif _login_type == LoginType.EMAIL:
-		if _result != Steam.RESULT_OK:
-			# We just silently don't link to Steam.
-			return
-		_finish_link_steam()
+	pass;
+	#if _login_type == LoginType.STEAM:
+		#if _result != Steam.RESULT_OK:
+			#ui_layer.show_message("MESSAGE_LOGIN_FAILED_STEAM")
+			#visible = true
+			#steam_login_button.focus.grab_without_sound()
+			#return
+#
+		#_finish_authenticate_steam()
+	#elif _login_type == LoginType.EMAIL:
+		#if _result != Steam.RESULT_OK:
+			## We just silently don't link to Steam.
+			#return
+		#_finish_link_steam()
 
 func _finish_authenticate_steam() -> void:
 	var nakama_session = await Online.nakama_client.authenticate_steam_async(_steam_auth_session_ticket, steam_username_field.text.strip_edges(), _steam_create)
@@ -261,7 +263,7 @@ func _on_CreateAccountButton_pressed() -> void:
 			_save_credentials()
 		Online.nakama_session = nakama_session
 		ui_layer.hide_message()
-		ui_layer.show_screen("MatchScreen")
+		ui_layer.show_screen("DebugScreen")
 
 func _on_ResetPasswordButton_pressed() -> void:
 	var email = $"TabContainer/Forgot password?/GridContainer/Email".text.strip_edges()

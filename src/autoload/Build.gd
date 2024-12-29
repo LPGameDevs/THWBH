@@ -18,4 +18,5 @@ func _ready() -> void:
 		var local = load('res://local.gd').new()
 		add_child(local)
 		if local.has_method('setup_local'):
-			local.call_deferred('setup_local')
+#			local.call_deferred('setup_local')
+			local.setup_local()
