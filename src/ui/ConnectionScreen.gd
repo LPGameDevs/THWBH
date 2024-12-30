@@ -41,11 +41,11 @@ func _ready() -> void:
 	tab_container.set_tab_title(3, "SESSION_SETUP_TAB_FORGOT_PASSWORD")
 
 	if SteamManager.use_steam:
-		#Steam.connect("get_auth_session_ticket_response", self, "_on_steam_auth_session_ticket_response")
+		Steam.get_auth_session_ticket_response.connect(_on_steam_auth_session_ticket_response)
 
 		create_account_tab.queue_free()
 		tab_container.set_tab_title(0, "SESSION_SETUP_TAB_CREATE_ACCOUNT")
-		#steam_username_field.text = Steam.getPersonaName()
+		steam_username_field.text = Steam.getPersonaName()
 	else:
 		tab_container.current_tab = 1
 		steam_tab.queue_free()
@@ -160,31 +160,29 @@ func do_steam_login(create: bool = false) -> void:
 	_get_steam_auth_session_ticket()
 
 func _get_steam_auth_session_ticket() -> void:
-	pass;
-	#var result = Steam.getAuthSessionTicket()
-#
-	## Convert binary ticket to hexidecimal.
-	## See: https://partner.steamgames.com/doc/webapi/ISteamUserAuth#AuthenticateUserTicket
-	## Nakama uses that method to authenticate on its end.
-	#_steam_auth_session_ticket = ''
-	#for i in range(result['size']):
-		#_steam_auth_session_ticket += "%02x" % result['buffer'][i]
+	var result = Steam.getAuthSessionTicket()
+
+	# Convert binary ticket to hexidecimal.
+	# See: https://partner.steamgames.com/doc/webapi/ISteamUserAuth#AuthenticateUserTicket
+	# Nakama uses that method to authenticate on its end.
+	_steam_auth_session_ticket = ''
+	for i in range(result['size']):
+		_steam_auth_session_ticket += "%02x" % result['buffer'][i]
 
 func _on_steam_auth_session_ticket_response(_auth_ticket_id, _result) -> void:
-	pass;
-	#if _login_type == LoginType.STEAM:
-		#if _result != Steam.RESULT_OK:
-			#ui_layer.show_message("MESSAGE_LOGIN_FAILED_STEAM")
-			#visible = true
-			#steam_login_button.focus.grab_without_sound()
-			#return
-#
-		#_finish_authenticate_steam()
-	#elif _login_type == LoginType.EMAIL:
-		#if _result != Steam.RESULT_OK:
-			## We just silently don't link to Steam.
-			#return
-		#_finish_link_steam()
+	if _login_type == LoginType.STEAM:
+		if _result != Steam.RESULT_OK:
+			ui_layer.show_message("MESSAGE_LOGIN_FAILED_STEAM")
+			visible = true
+			steam_login_button.focus.grab_without_sound()
+			return
+
+		_finish_authenticate_steam()
+	elif _login_type == LoginType.EMAIL:
+		if _result != Steam.RESULT_OK:
+			# We just silently don't link to Steam.
+			return
+		_finish_link_steam()
 
 func _finish_authenticate_steam() -> void:
 	var nakama_session = await Online.nakama_client.authenticate_steam_async(_steam_auth_session_ticket, steam_username_field.text.strip_edges(), _steam_create)
